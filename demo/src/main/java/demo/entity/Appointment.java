@@ -34,10 +34,12 @@ public class Appointment {
     }
 
     @Autowired
-    public Appointment(User employee, User client, Date date) {
+    public Appointment(User employee, User client, Date date, Location location, String details) {
         this.employee = employee;
         this.client = client;
         this.date = date;
+        this.location = location;
+        this.details = details;
     }
 
     public int getId() {
