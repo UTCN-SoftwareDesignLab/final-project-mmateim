@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -26,15 +27,16 @@ public class Appointment {
     @JoinColumn(name = "location_id")
     private Location location;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private Date date;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime date;
+
     private String details;
 
     public Appointment() {
     }
 
     @Autowired
-    public Appointment(User employee, User client, Date date, Location location, String details) {
+    public Appointment(User employee, User client, LocalDateTime date, Location location, String details) {
         this.employee = employee;
         this.client = client;
         this.date = date;
@@ -66,11 +68,19 @@ public class Appointment {
         this.client = client;
     }
 
-    public Date getDate() {
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

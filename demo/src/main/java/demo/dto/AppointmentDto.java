@@ -4,19 +4,20 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class AppointmentDto {
 
-    @NotNull(message = "Employee id may not be null")
+    //@NotNull(message = "Employee id may not be null")
     private Integer employee_id;
 
     @NotNull(message = "Client id may not be null")
     private Integer client_id;
 
-    @Future(message = "Date must be in the future")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private Date date;
+    //@Future(message = "Date must be in the future")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime date;
 
     private Integer location_id;
 
@@ -38,11 +39,11 @@ public class AppointmentDto {
         this.client_id = client_id;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

@@ -20,7 +20,7 @@ public class AuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHa
         }
         if (role.contains("EMPLOYEE")) {
             System.out.println("Handler : Logged in as SECRETARY");
-            return "/clients";
+            return "/appointments-employee";
         }
         System.out.println("Handler : Logged in as CLIENT");
         return "/profile";

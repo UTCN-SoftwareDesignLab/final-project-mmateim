@@ -18,6 +18,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
 
+
+
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
@@ -35,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/login/**").permitAll()
                 .antMatchers("/users/**").hasRole("ADMIN")
+                .antMatchers("/appointments-employee/**").hasAnyRole("ADMIN", "EMPLOYEE")
                 .antMatchers("/clients/**").hasAnyRole("ADMIN", "EMPLOYEE")
                 .and()
                 .formLogin()

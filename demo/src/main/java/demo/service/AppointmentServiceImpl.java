@@ -10,6 +10,8 @@ import demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -62,12 +64,24 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public boolean isEmployeeAvailable(int employee_id, Date date) {
-        List<Appointment> appointments = appointmentRepository.findByDate(date);
+    public boolean isEmployeeAvailable(int employee_id, LocalDateTime date) {
+        User employee = userRepository.findById(employee_id);
+        List<Appointment> appointments = appointmentRepository.findByEmployee(employee);
         for (Appointment a : appointments) {
-            if (a.getEmployee().getId() == employee_id)
+            if (areClose(a.getDate(), date)) {
                 return false;
+            }
         }
         return true;
+    }
+
+    private boolean areClose(LocalDateTime t1, LocalDateTime t2){
+        if(t1.isBefore(t2) != t1.isBefore(t2.minusHours(2))){
+            return true;
+        }
+        else if(t1.isAfter(t2) != t1.isAfter(t2.plusHours(2))){
+            return true;
+        }
+        return false;
     }
 }
