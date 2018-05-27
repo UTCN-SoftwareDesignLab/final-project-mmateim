@@ -5,6 +5,9 @@ import demo.entity.User;
 import demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,5 +60,17 @@ public class UserServiceImpl implements UserService {
         user.setName(userDto.getName());
         user.setUsername(userDto.getUsername());
         return userRepository.save(user);
+    }
+
+    @Override
+    public Object[] getByRole(String role) {
+        return getAll().stream().filter(u -> u.getRole().equals(role)).toArray();
+    }
+
+    @Override
+    public User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = ((UserDetails)auth.getPrincipal()).getUsername();
+        return findByUsername(username);
     }
 }

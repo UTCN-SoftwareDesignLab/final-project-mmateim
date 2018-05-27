@@ -23,6 +23,6 @@ public class AuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHa
             return "/appointments-employee";
         }
         System.out.println("Handler : Logged in as CLIENT");
-        return "/profile";
+        return "/appointments-client";
     }
 }

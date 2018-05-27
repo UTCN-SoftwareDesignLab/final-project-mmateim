@@ -12,4 +12,6 @@ public interface UserService {
     User create(UserDto user);
     void delete(int userId);
     User update(UserDto user, Integer id);
+    Object[] getByRole(String role);
+    User getCurrentUser();
 }

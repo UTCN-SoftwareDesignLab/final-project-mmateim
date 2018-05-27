@@ -1,19 +1,18 @@
 package demo.controller;
 
 import demo.dto.AppointmentDto;
+import demo.entity.Appointment;
 import demo.entity.User;
 import demo.service.AppointmentService;
 import demo.service.LocationService;
 import demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,34 +21,30 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Date;
 
 @Controller
-@RequestMapping(value = "/appointments-employee")
-public class AppointmentControllerEmployee {
-
-    private AppointmentService appointmentService;
-    private SimpMessagingTemplate simpMessagingTemplate;
-    private UserService userService;
-    private LocationService locationService;
+@RequestMapping(value = "/appointments-client")
+public class AppointmentControllerClient {
 
     @Autowired
-    public AppointmentControllerEmployee(AppointmentService appointmentService, SimpMessagingTemplate simpMessagingTemplate, UserService userService, LocationService locationService) {
-        this.appointmentService = appointmentService;
-        this.simpMessagingTemplate = simpMessagingTemplate;
-        this.userService = userService;
-        this.locationService = locationService;
-    }
+    private AppointmentService appointmentService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private LocationService locationService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String getAll(Model model) {
-        model.addAttribute("appointments", getOwnAppointments());
-        model.addAttribute("message", "");
-        model.addAttribute("clients", userService.getByRole("CLIENT"));
-        model.addAttribute("locations", locationService.getAll());
         model.addAttribute("appointmentDto", new AppointmentDto());
-        System.out.println("AppointmentController : return appointments-employee.html");
-        return "appointments-employee";
+        model.addAttribute("appointments", getOwnAppointments());
+        model.addAttribute("employees", userService.getByRole("EMPLOYEE"));
+        model.addAttribute("message", "");
+        model.addAttribute("locations", locationService.getAll());
+        System.out.println("AppointmentController : return appointments-client.html");
+        return "appointments-client";
     }
 
     @RequestMapping(params = "create=", method = RequestMethod.POST)
@@ -58,7 +53,7 @@ public class AppointmentControllerEmployee {
         String message;
         if(appointmentDto.getDate().toLocalDate().isAfter(LocalDate.now())) {
             if (!bindingResult.hasErrors()) {
-                appointmentDto.setEmployee_id(userService.getCurrentUser().getId());
+                appointmentDto.setClient_id(userService.getCurrentUser().getId());
                 if (appointmentService.isEmployeeAvailable(appointmentDto.getEmployee_id(), appointmentDto.getDate())) {
                     if (appointmentService.create(appointmentDto) != null) {
                         System.out.println("AppointmentController : create appointment Done");
@@ -89,9 +84,9 @@ public class AppointmentControllerEmployee {
         }
         model.addAttribute("appointments", getOwnAppointments());
         model.addAttribute("message", message);
-        model.addAttribute("clients", userService.getByRole("CLIENT"));
+        model.addAttribute("employees", userService.getByRole("EMPLOYEE"));
         model.addAttribute("locations", locationService.getAll());
-        return "appointments-employee";
+        return "appointments-client";
     }
 
     @RequestMapping(params = "update=", method = RequestMethod.POST)
@@ -101,7 +96,7 @@ public class AppointmentControllerEmployee {
         if(appointmentDto.getDate().toLocalDate().isAfter(LocalDate.now())) {
             if (!bindingResult.hasErrors()) {
                 User user = userService.getCurrentUser();
-                appointmentDto.setEmployee_id(user.getId());
+                appointmentDto.setClient_id(user.getId());
                 if (appointmentService.update(appointmentDto, appointmentId) != null) {
                     System.out.println("AppointmentController : update appointment Done");
                     message = "";
@@ -122,30 +117,19 @@ public class AppointmentControllerEmployee {
         }
         model.addAttribute("appointments", getOwnAppointments());
         model.addAttribute("message", message);
-        model.addAttribute("clients", userService.getByRole("CLIENT"));
+        model.addAttribute("employees", userService.getByRole("EMPLOYEE"));
         model.addAttribute("locations", locationService.getAll());
-        return "appointments-employee";
+        return "appointments-client";
     }
 
-    @RequestMapping(params = "delete=", method = RequestMethod.GET)
-    public String deleteAppointment(Model model, @RequestParam("deleteId") Integer deleteId) {
-        System.out.println("AppointmentController : delete");
-        String message = "";
-        if (deleteId != null) {
-            appointmentService.delete(deleteId);
-        } else {
-            message = "Id field is empty";
-        }
-        model.addAttribute("appointmentDto", new AppointmentDto());
-        model.addAttribute("appointments", getOwnAppointments());
-        model.addAttribute("message", message);
-        model.addAttribute("clients", userService.getByRole("CLIENT"));
-        model.addAttribute("locations", locationService.getAll());
-        return "appointments-employee";
-    }
+//    private User getCurrentUser(){
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        String username = ((UserDetails)auth.getPrincipal()).getUsername();
+//        return userService.findByUsername(username);
+//    }
 
-    private Object[] getOwnAppointments(){
+    private Object getOwnAppointments(){
         User user = userService.getCurrentUser();
-        return appointmentService.getAll().stream().filter(a->a.getEmployee() == user).toArray();
+        return appointmentService.getAll().stream().filter(it->it.getClient().equals(user)).toArray();
     }
 }

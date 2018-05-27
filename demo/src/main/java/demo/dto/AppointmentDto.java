@@ -12,7 +12,7 @@ public class AppointmentDto {
     //@NotNull(message = "Employee id may not be null")
     private Integer employee_id;
 
-    @NotNull(message = "Client id may not be null")
+    //@NotNull(message = "Client id may not be null")
     private Integer client_id;
 
     //@Future(message = "Date must be in the future")
