@@ -21,7 +21,7 @@ public class LocationDto {
 
     @NotNull
     @Pattern(regexp = "(^SPA$|^GYM|^SALON$)", message = "Type must be SPA / GYM / SALON")
-    private LocationType type;
+    private String type;
 
     public String getName() {
         return name;
@@ -39,11 +39,11 @@ public class LocationDto {
         this.address = address;
     }
 
-    public LocationType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(LocationType type) {
+    public void setType(String type) {
         this.type = type;
     }
 }

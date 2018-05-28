@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Users</title>
+    <style>
+        td {
+            width: 200px;
+            text-align: center;
+        }
+
+        th {
+            text-align: center;
+        }
+
+        table, th, td {
+            border-collapse: collapse;
+            border: 1px solid black;
+        }
+
+    </style>
+</head>
+<body>
+<a th:href="@{/logout}">Logout</a>
+<a th:href="@{/locations}">Locations</a>
+
+<h1>Users:</h1>
+<h2 th:text="${message}"></h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Username</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.role}"></td>
+        <td th:text="${user.username}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<hr/>
+<br/>
+<h3>All fields must me completed</h3>
+<form action="#" th:action="@{/users}" name="userDto" id="userDto" th:object="${userDto}" method="post">
+    Id: <br/>
+    <input type="number" id="userId" name="userId"/> <br/>
+    Name: <br/>
+    <input type="text" id="name" name="name" th:field="${userDto.name}"/> <br/>
+    Role: <br/>
+    <select name="role" id="role" th:field="${userDto.role}">
+        <option value="EMPLOYEE">EMPLOYEE</option>
+        <option value="CLIENT">CLIENT</option>
+    </select> <br/>
+    Username: <br/>
+    <input type="text" id="username" name="username" th:field="${userDto.username}"/> <br/>
+    Password: <br/>
+    <input type="password" id="password" name="password" th:field="${userDto.password}"/> <br/>
+
+    <button type="submit" name="create">Create</button>
+    <button type="submit" name="update">Update</button>
+</form>
+<hr/>
+<form>
+    Id: <br/>
+    <input type="number" id="deleteId" name="deleteId"/> <br/> <br/>
+    <button type="submit" name="delete">Delete</button>
+</form>
+</body>
+</html>

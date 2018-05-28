@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Appointments</title>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/appDoctor.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        td {
+            width: 200px;
+            text-align: center;
+        }
+
+        th {
+            text-align: center;
+        }
+
+        table, th, td {
+            border-collapse: collapse;
+            border: 1px solid black;
+        }
+
+    </style>
+</head>
+<body onload="connect()" onunload="disconnect()">
+<a th:href="@{/logout}">Logout</a>
+
+<h1>All fields must be completed</h1>
+<h2 th:text="${message}"></h2>
+
+<hr/>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th>Employee</th>
+        <th>Location</th>
+        <th>Details</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="appointment : ${appointments}">
+        <td th:text="${appointment.id}"></td>
+        <td th:text="${appointment.date}"></td>
+        <td th:text="${appointment.employee.name}"></td>
+        <td th:text="${appointment.location.name}"></td>
+        <td th:text="${appointment.details}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<hr/>
+
+<br/>
+<h3>All fields must me completed</h3>
+<form action="#" th:action="@{/appointments-client}" name="appointmentDto" id="appointmentDto"
+      th:object="${appointmentDto}" method="post">
+    Id: <br/>
+    <input type="number" id="appointmentId" name="appointmentId"/> <br/>
+    Employee: <br/>
+    <select name="employee_id" id="employee_id" th:field="${appointmentDto.employee_id}">
+        <option th:each="employee : ${employees}" th:value="${employee.id}" th:text="${employee.name}"></option>
+    </select> <br/>
+    Date: <br/>
+    <input type="datetime-local" id="date" name="date" th:field="${appointmentDto.date}"/> <br/>
+    Location: <br/>
+    <select name="location_id" id="location_id" th:field="${appointmentDto.location_id}">
+        <option th:each="location : ${locations}" th:value="${location.id}" th:text="${location.name}"></option>
+    </select> <br/>
+    Details: <br/>
+    <textarea type="text" id="details" name="details" th:field="${appointmentDto.details}"></textarea> <br/>
+
+    <button type="submit" name="create">Create</button>
+    <button type="submit" name="update">Update</button>
+</form>
+
+<hr/>
+<!--<noscript><h2>Seems your browser doesn't support Javascript! Websocket relies on Javascript being-->
+    <!--enabled. Please enable-->
+    <!--Javascript and reload this page!</h2></noscript>-->
+
+<!--<div id="main-content" class="container">-->
+    <!--<div class="row">-->
+        <!--<div class="col-md-12">-->
+            <!--<table id="conversation" class="table table-striped">-->
+                <!--<thead>-->
+                <!--<tr>-->
+                    <!--<th>Notification</th>-->
+                <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody id="notifications">-->
+                <!--</tbody>-->
+            <!--</table>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+</body>
+</html>

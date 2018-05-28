@@ -2,6 +2,7 @@ package demo.service;
 
 import demo.dto.LocationDto;
 import demo.entity.Location;
+import demo.entity.LocationType;
 import demo.repository.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public Location create(LocationDto locationDto) {
-        Location location = new Location(locationDto.getName(), locationDto.getAddress(), locationDto.getType());
+        Location location = new Location(locationDto.getName(), locationDto.getAddress(), LocationType.valueOf(locationDto.getType()));
         return locationRepository.save(location);
     }
 
@@ -37,7 +38,12 @@ public class LocationServiceImpl implements LocationService {
         Location location = locationRepository.findById(id);
         location.setAddress(locationDto.getAddress());
         location.setName(locationDto.getName());
-        location.setType(locationDto.getType());
+        location.setType(LocationType.valueOf(locationDto.getType()));
         return locationRepository.save(location);
+    }
+
+    @Override
+    public void delete(Integer id) {
+        locationRepository.delete(id);
     }
 }

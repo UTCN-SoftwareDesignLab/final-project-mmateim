@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Locations</title>
+    <style>
+        td {
+            width: 200px;
+            text-align: center;
+        }
+
+        th {
+            text-align: center;
+        }
+
+        table, th, td {
+            border-collapse: collapse;
+            border: 1px solid black;
+        }
+
+    </style>
+</head>
+<body>
+<a th:href="@{/logout}">Logout</a>
+<a th:href="@{/users}">Users</a>
+
+<h1>Locations:</h1>
+<h2 th:text="${message}"></h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="location : ${locations}">
+        <td th:text="${location.id}"></td>
+        <td th:text="${location.name}"></td>
+        <td th:text="${location.address}"></td>
+        <td th:text="${location.type}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<hr/>
+<br/>
+<h3>All fields must me completed</h3>
+<form action="#" th:action="@{/locations}" name="locationDto" id="locationDto" th:object="${locationDto}" method="post">
+    Id: <br/>
+    <input type="number" id="locationId" name="locationId"/> <br/>
+    Name: <br/>
+    <input type="text" id="name" name="name" th:field="${locationDto.name}"/> <br/>
+    Address: <br/>
+    <input type="text" id="address" name="address" th:field="${locationDto.address}"/> <br/>
+    Type: <br/>
+    <select name="type" id="type" th:field="${locationDto.type}">
+        <option value="SPA">SPA</option>
+        <option value="GYM">GYM</option>
+        <option value="SALON">SALON</option>
+    </select> <br/>
+    <br/>
+    <button type="submit" name="create">Create</button>
+    <button type="submit" name="update">Update</button>
+</form>
+<hr/>
+<form>
+    Id: <br/>
+    <input type="number" id="deleteId" name="deleteId"/> <br/> <br/>
+    <button type="submit" name="delete">Delete</button>
+</form>
+</body>
+</html>
