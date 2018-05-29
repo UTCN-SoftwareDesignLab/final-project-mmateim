@@ -29,14 +29,12 @@ import java.util.List;
 public class AppointmentControllerEmployee {
 
     private AppointmentService appointmentService;
-    private SimpMessagingTemplate simpMessagingTemplate;
     private UserService userService;
     private LocationService locationService;
 
     @Autowired
-    public AppointmentControllerEmployee(AppointmentService appointmentService, SimpMessagingTemplate simpMessagingTemplate, UserService userService, LocationService locationService) {
+    public AppointmentControllerEmployee(AppointmentService appointmentService, UserService userService, LocationService locationService) {
         this.appointmentService = appointmentService;
-        this.simpMessagingTemplate = simpMessagingTemplate;
         this.userService = userService;
         this.locationService = locationService;
     }

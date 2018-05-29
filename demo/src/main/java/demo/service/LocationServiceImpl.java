@@ -46,4 +46,9 @@ public class LocationServiceImpl implements LocationService {
     public void delete(Integer id) {
         locationRepository.delete(id);
     }
+
+    @Override
+    public Location findById(Integer id) {
+        return locationRepository.findById(id);
+    }
 }

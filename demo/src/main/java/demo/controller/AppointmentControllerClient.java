@@ -1,12 +1,15 @@
 package demo.controller;
 
 import demo.dto.AppointmentDto;
+import demo.dto.Message;
 import demo.entity.Appointment;
+import demo.entity.Location;
 import demo.entity.User;
 import demo.service.AppointmentService;
 import demo.service.LocationService;
 import demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,6 +39,9 @@ public class AppointmentControllerClient {
     @Autowired
     private LocationService locationService;
 
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
     @RequestMapping(method = RequestMethod.GET)
     public String getAll(Model model) {
         model.addAttribute("appointmentDto", new AppointmentDto());
@@ -51,7 +57,7 @@ public class AppointmentControllerClient {
     public String createAppointment(Model model, @Valid @ModelAttribute("appointmentDto") AppointmentDto appointmentDto, BindingResult bindingResult) {
         System.out.println("AppointmentController : create");
         String message;
-        if(appointmentDto.getDate().toLocalDate().isAfter(LocalDate.now())) {
+        if (appointmentDto.getDate().toLocalDate().isAfter(LocalDate.now())) {
             if (!bindingResult.hasErrors()) {
                 appointmentDto.setClient_id(userService.getCurrentUser().getId());
                 if (appointmentService.isEmployeeAvailable(appointmentDto.getEmployee_id(), appointmentDto.getDate())) {
@@ -59,12 +65,7 @@ public class AppointmentControllerClient {
                         System.out.println("AppointmentController : create appointment Done");
                         message = "";
                         model.addAttribute("appointmentDto", new AppointmentDto());
-
-                    /*
-                    Message message1 = new Message("Client " + appointmentDto.getClient_id() + " scheduled a consultation on " + appointmentDto.getDate());
-                    User employee = userService.findById(appointmentDto.getEmployee_id());
-                    simpMessagingTemplate.convertAndSendToUser(employee.getUsername(), "/queue/reply", message1);
-                    */
+                        sendMessage(appointmentDto);
                     } else {
                         message = "SQL error at insert";
                     }
@@ -74,8 +75,7 @@ public class AppointmentControllerClient {
             } else {
                 message = Utilities.getErrors(bindingResult);
             }
-        }
-        else {
+        } else {
             message = "Date is not in the future";
         }
         if (!message.equals("")) {
@@ -93,7 +93,7 @@ public class AppointmentControllerClient {
     public String updateAppointment(Model model, @Valid @ModelAttribute("appointmentDto") AppointmentDto appointmentDto, @NotNull @RequestParam("appointmentId") Integer appointmentId, BindingResult bindingResult) {
         System.out.println("AppointmentController : update");
         String message;
-        if(appointmentDto.getDate().toLocalDate().isAfter(LocalDate.now())) {
+        if (appointmentDto.getDate().toLocalDate().isAfter(LocalDate.now())) {
             if (!bindingResult.hasErrors()) {
                 User user = userService.getCurrentUser();
                 appointmentDto.setClient_id(user.getId());
@@ -107,8 +107,7 @@ public class AppointmentControllerClient {
             } else {
                 message = Utilities.getErrors(bindingResult);
             }
-        }
-        else {
+        } else {
             message = "Date is not in the future";
         }
         if (!message.equals("")) {
@@ -122,14 +121,16 @@ public class AppointmentControllerClient {
         return "appointments-client";
     }
 
-//    private User getCurrentUser(){
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        String username = ((UserDetails)auth.getPrincipal()).getUsername();
-//        return userService.findByUsername(username);
-//    }
-
-    private Object getOwnAppointments(){
+    private Object getOwnAppointments() {
         User user = userService.getCurrentUser();
-        return appointmentService.getAll().stream().filter(it->it.getClient().equals(user)).toArray();
+        return appointmentService.getAll().stream().filter(it -> it.getClient().equals(user)).toArray();
+    }
+
+    private void sendMessage(AppointmentDto appointmentDto){
+        User client = userService.findById(appointmentDto.getClient_id());
+        Location location = locationService.findById(appointmentDto.getLocation_id());
+        Message message1 = new Message("Client " + client.getName() + " scheduled an appointment on " + appointmentDto.getDate() + " at " + location.getName());
+        User employee = userService.findById(appointmentDto.getEmployee_id());
+        simpMessagingTemplate.convertAndSendToUser(employee.getUsername(), "/queue/reply", message1);
     }
 }
